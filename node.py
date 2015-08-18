@@ -7,7 +7,10 @@ from kbucket import KBucket
 
 def xor(b1, b2):
     assert len(b1) == len(b2)
-    return int.from_bytes(b1, 'big') ^ int.from_bytes(b2, 'big')
+    i1 = int.from_bytes(b1, 'big')
+    i2 = int.from_bytes(b2, 'big')
+
+    return i1 ^ i2
 
 class Node:
     def __init__(self, k):
@@ -16,6 +19,10 @@ class Node:
 
     def getid(self):
         return self._id
+
+    def find_node(self, nodeid):
+        distance = xor(self._id.encode('utf-8'), nodeid.encode('utf-8'))
+        return self._kbucket.getkclose(distance)
 
     def addcontact(self, contact):
         contactId = contact[0]

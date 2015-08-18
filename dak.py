@@ -4,6 +4,7 @@ import random
 import argparse
 import socket
 import hashlib
+import os
 
 from utils import log
 from peer import Peer
@@ -11,9 +12,11 @@ from node import Node
 
 def main():
     parser = argparse.ArgumentParser(description='a simple Kademlia implementation')
-    parser.add_argument('-j', '--join')
     parser.add_argument('-p', '--port')
-    parser.add_argument('--ping')
+    parser.add_argument('--to')
+    parser.add_argument('--ping', action = 'store_true')
+    parser.add_argument('--find-node')
+    parser.add_argument('--listen', action = 'store_true')
 
     args = parser.parse_args()
 
@@ -24,17 +27,19 @@ def main():
     log('Peer started at {}'.format(port))
     log('Node id {}'.format(node.getid()))
 
-    if(args.ping != None):
-        toAddr, toPort = args.ping.split(':')
+    if(args.to != None):
+        toAddr, toPort = args.to.split(':')
         toPort = int(toPort)
-        peer.ping(toAddr, toPort)
-    elif(args.join != None):
-        toAddr, toPort = args.join.split(':')
-        toPort = int(toPort)
-        log('Joining to {}:{}'.format(toAddr, toPort))
-        peer.join(toAddr, toPort)
 
-    peer.listen()
+    if(args.ping and args.to != None):
+        peer.ping(toAddr, toPort)
+
+    if(args.find_node != None and args.to != None):
+        peer.find_node(args.find_node, toAddr, toPort)
+
+    if(args.listen):
+        peer.listen()
+
 
 if __name__ == '__main__':
     main()

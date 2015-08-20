@@ -2,7 +2,8 @@ import socket
 
 from utils import log
 from node import Node
-from rpc import Ping, Pong, Request, RequestFactory, FindNode
+from requestfactory import RequestFactory
+from rpc import Ping, Pong, LocalFindNode
 
 class Peer:
     def __init__(self, node, port):
@@ -15,15 +16,8 @@ class Peer:
 
         while True:
             data, (reqAddr, reqPort) = self.socket.recvfrom(4096)
-
             packet = RequestFactory.requestfrombytes(data, self.node._id)
-
-            #update the bucket on every request
-            reqType, reqIdentifier, reqNodeId, packetData = [row.decode() for row in data.split(b'\n')]
-            contact = (reqNodeId, reqAddr, reqPort)
-            self.node.addcontact(contact)
-
-            packet.onreceive(self, reqAddr, reqPort)
+            packet.handle(self, reqAddr, reqPort)
 
     def ping(self, address, port):
         ping = Ping(self.node._id)
@@ -33,12 +27,10 @@ class Peer:
         pong = Pong(self.node._id)
         pong.send(self, address, port)
 
-    def find_node(self, nodeid, address, port):
-        findnode = FindNode(self.node._id)
-        findnode.setSearchedId(nodeid)
-        findnode.send(self, address, port)
+    def local_find_node(self, nodeid, port):
+        localfindnode = LocalFindNode()
+        localfindnode.setnodeid(nodeid)
+        localfindnode.send(self, port)
 
     def getsocket(self):
         return self.socket
-
-

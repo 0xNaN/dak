@@ -12,7 +12,7 @@ def main():
     parser = argparse.ArgumentParser(description='a simple Kademlia implementation')
     parser.add_argument('-p', '--port', help = "specify the port to use")
     parser.add_argument('--to', help = "specify the destination of a request. e.g: <address>:<port>, <port>")
-    parser.add_argument('--listen', action = 'store_true', help = "keep up the peer to listen incoming request")
+    parser.add_argument('--listen', action = 'store_true', help = "keep up the peer to listen incoming requests")
     parser.add_argument('--ping', action = 'store_true', help = "perform a PING request on the target peer")
     parser.add_argument('--local-find-node', metavar = "NODE_ID", help = "perform a FIND-NODE request on a local peer")
     args = parser.parse_args()
